@@ -1,0 +1,6 @@
+.header {
+	@apply container mx-auto my-5 shadow-md px-3 py-3 md:rounded-lg flex flex-row justify-between items-center;
+}
+.brand_logo {
+	@apply w-14 p-2;
+}

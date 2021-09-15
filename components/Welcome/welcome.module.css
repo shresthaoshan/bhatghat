@@ -1,0 +1,3 @@
+.welcome_board {
+	@apply shadow-lg h-full lg:rounded-lg overflow-hidden bg-white pt-3 md:pt-8 lg:pt-16 pb-0 flex flex-col justify-between;
+}
