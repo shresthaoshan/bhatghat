@@ -44,7 +44,7 @@ function EntryForm() {
 						</div>
 					</div>
 				</div>
-				<div className="text-center text-base font-sans">
+				<div className="text-center text-base font-sans pb-4">
 					<p>
 						New here?{" "}
 						<span className="text-purple-700 underline cursor-pointer">
