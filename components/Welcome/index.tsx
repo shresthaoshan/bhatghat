@@ -53,7 +53,7 @@ function EntryForm() {
 					</p>
 				</div>
 			</div>
-			<div className="w-full flex justify-around mt-10 text-sm border-t-2 pt-4 pb-4">
+			<div className="w-full flex justify-around text-sm border-t-2 pt-4 pb-4">
 				<span className="text-purple-700 cursor-pointer">
 					Terms of Service
 				</span>
