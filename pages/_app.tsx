@@ -1,9 +1,12 @@
 import Head from "next/head";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Hydrate } from "react-query/hydration";
+import { RecoilRoot } from "recoil";
 
-import "../styles/globals.css";
+import "antd/dist/antd.min.css";
 import "tailwindcss/tailwind.css";
+import "../styles/globals.css";
+
 import { useState } from "react";
 
 function MyApp({ Component, pageProps }) {
@@ -18,13 +21,15 @@ function MyApp({ Component, pageProps }) {
 				/>
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
-			<QueryClientProvider client={queryClient}>
-				<Hydrate state={pageProps.dehydratedState}>
-					<main className="container mx-auto py-0 lg:py-5 h-screen">
-						<Component {...pageProps} />
-					</main>
-				</Hydrate>
-			</QueryClientProvider>
+			<RecoilRoot>
+				<QueryClientProvider client={queryClient}>
+					<Hydrate state={pageProps.dehydratedState}>
+						<main className="container mx-auto py-0 lg:py-5 h-screen">
+							<Component {...pageProps} />
+						</main>
+					</Hydrate>
+				</QueryClientProvider>
+			</RecoilRoot>
 		</>
 	);
 }

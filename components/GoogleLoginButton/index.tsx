@@ -1,13 +1,13 @@
 import React from "react";
 import GoogleLogin from "react-google-login";
 import google_conf from "configs/google_configs";
-import { useLoginWithGoogle } from "data/entities/login/queries/WithGoogle";
 import LoginButton from "components/Buttons/LoginButton";
 
 import { FcGoogle } from "react-icons/fc";
+import { useAuth } from "data/store/auth.store";
 
 function GoogleLoginButton() {
-	const { data, error, login, status } = useLoginWithGoogle();
+	const { loginWithGoogle, status } = useAuth();
 
 	return (
 		<>
@@ -19,9 +19,9 @@ function GoogleLoginButton() {
 				theme="dark"
 				icon={false}
 				onSuccess={(pack) => {
-					login((pack as any).tokenId as string);
+					loginWithGoogle(pack);
 				}}
-				disabled={status === "loading"}
+				disabled={status === "LOGGING_IN"}
 				render={(props) => (
 					<LoginButton
 						icon={<FcGoogle size={20} />}
