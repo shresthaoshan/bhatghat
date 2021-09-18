@@ -3,6 +3,8 @@ import jwtDecode from "jwt-decode";
 import {
 	onLoginEmail,
 	onLoginWithGoogle,
+	onRegistration,
+	onVerification,
 } from "data/entities/login/login.services";
 import { atom, useRecoilState } from "recoil";
 import { message } from "antd";
@@ -12,7 +14,14 @@ interface IAuth {
 	name: string;
 	email: string;
 	verified: string;
-	status: "LOGGED_IN" | "LOGGING_IN" | "FAILED" | "LOGGED_OUT" | "IDLE";
+	status:
+		| "LOGGED_IN"
+		| "LOGGING_IN"
+		| "FAILED"
+		| "LOGGED_OUT"
+		| "REGISTERING"
+		| "VERIFYING"
+		| "IDLE";
 }
 
 // default values
@@ -26,7 +35,7 @@ const initValues: IAuth = {
 
 // atom declaration
 const authAtom = atom<IAuth>({
-	key: "sys",
+	key: "auth",
 	default: initValues,
 });
 
@@ -77,6 +86,43 @@ export const useAuth = () => {
 				...authState,
 				status: "FAILED",
 			});
+			console.log({ ex });
+			message.error(ex.message || "Something went wrong.");
+		}
+	};
+
+	const register = async (name: string, email: string, password: string) => {
+		try {
+			setAuth({
+				...authState,
+				status: "REGISTERING",
+			});
+			const resp = await onRegistration(name, email, password);
+			tokenLogin(resp.token);
+		} catch (ex) {
+			setAuth({
+				...authState,
+				status: "FAILED",
+			});
+			console.log({ ex });
+			message.error(ex.message || "Something went wrong.");
+		}
+	};
+
+	const verify = async (code: string) => {
+		try {
+			setAuth({
+				...authState,
+				status: "VERIFYING",
+			});
+			await onVerification(code);
+			message.success("Verification successful");
+		} catch (ex) {
+			setAuth({
+				...authState,
+				status: "FAILED",
+			});
+			console.log({ ex });
 			message.error(ex.message || "Something went wrong.");
 		}
 	};
@@ -89,5 +135,12 @@ export const useAuth = () => {
 		});
 	};
 
-	return { ...authState, loginWithGoogle, loginWithEmail, logout };
+	return {
+		...authState,
+		loginWithGoogle,
+		loginWithEmail,
+		register,
+		verify,
+		logout,
+	};
 };
