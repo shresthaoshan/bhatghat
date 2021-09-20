@@ -8,6 +8,7 @@ import "tailwindcss/tailwind.css";
 import "../styles/globals.css";
 
 import { useState } from "react";
+import AuthComponent from "components/Auth";
 
 function MyApp({ Component, pageProps }) {
 	const [queryClient] = useState(() => new QueryClient());
@@ -24,9 +25,11 @@ function MyApp({ Component, pageProps }) {
 			<RecoilRoot>
 				<QueryClientProvider client={queryClient}>
 					<Hydrate state={pageProps.dehydratedState}>
-						<main className="container mx-auto py-0 lg:py-5 h-screen">
-							<Component {...pageProps} />
-						</main>
+						<AuthComponent>
+							<main className="container mx-auto py-0 lg:py-5 h-screen">
+								<Component {...pageProps} />
+							</main>
+						</AuthComponent>
 					</Hydrate>
 				</QueryClientProvider>
 			</RecoilRoot>

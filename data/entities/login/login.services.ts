@@ -18,3 +18,6 @@ export const onRegistration = (
 
 export const onVerification = (code: string): Promise<LoginResponse> =>
 	client.post("/auth/verify", { code });
+
+export const onTokenValidation = (): Promise<LoginResponse> =>
+	client.get("/auth/verifyToken");

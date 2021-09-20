@@ -16,6 +16,7 @@ function Playground() {
 		init,
 		joinRoom,
 		initLocalTrack,
+		closeLocalTracks,
 		room,
 		peers,
 		status,
@@ -52,6 +53,11 @@ function Playground() {
 		};
 
 		initSequence();
+
+		return () => {
+			closeLocalTracks();
+			if (status === "joined") room.disconnect();
+		};
 		// eslint-disable-next-line
 	}, []);
 

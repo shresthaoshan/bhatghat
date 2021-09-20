@@ -7,6 +7,8 @@ import {
 	Room,
 	LocalTrack,
 	runPreflight,
+	VideoTrack,
+	AudioTrack,
 } from "twilio-video";
 import twillio_config from "configs/twillio.config";
 
@@ -83,6 +85,14 @@ export const useTwillio = (token: string) => {
 		setPeers(_room.participants);
 	};
 
+	const closeLocalTracks = () => {
+		localTrack?.forEach((track) => {
+			if (track.kind === "audio" || track.kind === "video") {
+				track.stop();
+			}
+		});
+	};
+
 	return {
 		isSupported,
 		room,
@@ -91,6 +101,7 @@ export const useTwillio = (token: string) => {
 		status,
 		init,
 		initLocalTrack,
+		closeLocalTracks,
 		joinRoom,
 	};
 };

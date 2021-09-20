@@ -1,8 +1,12 @@
+import RoomList from "components/RoomList";
 import Welcome from "components/Welcome";
+import { useAuth } from "data/store/auth.store";
 import Image from "next/image";
 import bg from "public/vectors/friends-elem.png";
 
 export default function Home() {
+	const { status } = useAuth();
+
 	return (
 		<>
 			<div className="flex flex-col lg:flex-row gap-4 lg:gap-0 min-h-full lg:h-full justify-between">
@@ -24,7 +28,7 @@ export default function Home() {
 						</div>
 					</div>
 				</div>
-				<Welcome />
+				{status === "LOGGED_IN" ? <RoomList /> : <Welcome />}
 			</div>
 		</>
 	);

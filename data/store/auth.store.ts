@@ -4,6 +4,7 @@ import {
 	onLoginEmail,
 	onLoginWithGoogle,
 	onRegistration,
+	onTokenValidation,
 	onVerification,
 } from "data/entities/login/login.services";
 import { atom, useRecoilState } from "recoil";
@@ -21,6 +22,7 @@ interface IAuth {
 		| "LOGGED_OUT"
 		| "REGISTERING"
 		| "VERIFYING"
+		| "VALIDATING_TOKEN"
 		| "IDLE";
 }
 
@@ -43,7 +45,8 @@ const authAtom = atom<IAuth>({
 export const useAuth = () => {
 	const [authState, setAuth] = useRecoilState(authAtom);
 
-	const tokenLogin = (token: string) => {
+	const tokenLogin = (token: string, saveToken?: boolean) => {
+		if (saveToken) localStorage.setItem("token", token);
 		const payload = jwtDecode(token) as Omit<
 			Omit<IAuth, "status">,
 			"token"
@@ -63,7 +66,7 @@ export const useAuth = () => {
 				status: "LOGGING_IN",
 			});
 			const resp = await onLoginWithGoogle((pack as any).tokenId);
-			tokenLogin(resp.token);
+			tokenLogin(resp.token, true);
 		} catch (ex) {
 			setAuth({
 				...authState,
@@ -80,7 +83,7 @@ export const useAuth = () => {
 				status: "LOGGING_IN",
 			});
 			const resp = await onLoginEmail(email, password);
-			tokenLogin(resp.token);
+			tokenLogin(resp.token, true);
 		} catch (ex) {
 			setAuth({
 				...authState,
@@ -98,7 +101,7 @@ export const useAuth = () => {
 				status: "REGISTERING",
 			});
 			const resp = await onRegistration(name, email, password);
-			tokenLogin(resp.token);
+			tokenLogin(resp.token, true);
 		} catch (ex) {
 			setAuth({
 				...authState,
@@ -116,6 +119,10 @@ export const useAuth = () => {
 				status: "VERIFYING",
 			});
 			await onVerification(code);
+			setAuth({
+				...authState,
+				status: "LOGGED_IN",
+			});
 			message.success("Verification successful");
 		} catch (ex) {
 			setAuth({
@@ -135,12 +142,37 @@ export const useAuth = () => {
 		});
 	};
 
+	const validateToken = async () => {
+		try {
+			setAuth({
+				...authState,
+				status: "VALIDATING_TOKEN",
+			});
+			const resp = await onTokenValidation();
+			setAuth({
+				...authState,
+				status: "LOGGED_IN",
+			});
+			console.log({ resp });
+			message.success("Auto login successful");
+		} catch (ex) {
+			setAuth({
+				...authState,
+				status: "FAILED",
+			});
+			logout();
+			console.log({ ex });
+			message.error(ex.message || "Something went wrong.");
+		}
+	};
+
 	return {
 		...authState,
 		loginWithGoogle,
 		loginWithEmail,
 		register,
 		verify,
+		validateToken,
 		logout,
 	};
 };

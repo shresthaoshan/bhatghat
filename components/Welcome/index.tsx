@@ -4,7 +4,7 @@ import Image from "next/image";
 import LoginButton from "components/Buttons/LoginButton";
 import GoogleLoginButton from "components/GoogleLoginButton";
 
-import { Button, Form, Input } from "antd";
+import { Spin } from "antd";
 import { SiMailDotRu } from "react-icons/si";
 import { useAuth } from "data/store/auth.store";
 import { AnimatePresence, motion } from "framer-motion";
@@ -14,6 +14,8 @@ import { WelcomeFormShow } from "./types";
 
 function EntryForm() {
 	const [toShow, setToShow] = useState<WelcomeFormShow>("options");
+
+	const { status } = useAuth();
 
 	return (
 		<div
@@ -66,67 +68,78 @@ function EntryForm() {
 					style={{ width: "min(520px, 100%)" }}
 					className="sign-in p-4 pt-2 mt-0 lg:mt-5 mx-auto"
 				>
-					<AnimatePresence initial exitBeforeEnter>
-						{toShow === "options" && (
-							<motion.div
-								initial={{
-									x: "100%",
-									opacity: 0,
-								}}
-								animate={{
-									x: "0%",
-									opacity: 1,
-									transition: {
-										duration: 0.2,
-										type: "spring",
-										damping: 25,
-										stiffness: 500,
-									},
-								}}
-								exit={{
-									x: "0%",
-									opacity: 0,
-								}}
-								key="options"
-								className="p-4 border-2 rounded-md text-center"
-							>
-								<h4 className="text-lg font-sans font-medium">
-									{/* eslint-disable-next-line */}
-									Let's get you started...
-								</h4>
-								<div className="grid grid-rows-2 gap-4 mt-4">
-									<GoogleLoginButton />
-									<LoginButton
-										onClick={() => setToShow("login")}
-										icon={<SiMailDotRu size={20} />}
-									>
-										Login with email
-									</LoginButton>
-								</div>
-								<div className="text-center text-base font-sans pb-2 mt-6">
-									<p>
-										New here?{" "}
-										<span
-											onClick={() =>
-												setToShow("register")
-											}
-											className="text-purple-700 underline cursor-pointer"
+					<Spin
+						spinning={
+							status === "LOGGING_IN" ||
+							status === "REGISTERING" ||
+							status === "VERIFYING" ||
+							status === "VALIDATING_TOKEN"
+						}
+					>
+						<AnimatePresence initial exitBeforeEnter>
+							{toShow === "options" && (
+								<motion.div
+									initial={{
+										x: "100%",
+										opacity: 0,
+									}}
+									animate={{
+										x: "0%",
+										opacity: 1,
+										transition: {
+											duration: 0.2,
+											type: "spring",
+											damping: 25,
+											stiffness: 500,
+										},
+									}}
+									exit={{
+										x: "0%",
+										opacity: 0,
+									}}
+									key="options"
+									className="p-4 border-2 rounded-md text-center"
+								>
+									<h4 className="text-lg font-sans font-medium">
+										{/* eslint-disable-next-line */}
+										Let's get you started...
+									</h4>
+									<div className="grid grid-rows-2 gap-4 mt-4">
+										<GoogleLoginButton />
+										<LoginButton
+											onClick={() => setToShow("login")}
+											icon={<SiMailDotRu size={20} />}
 										>
-											Register
-										</span>
-									</p>
-								</div>
-							</motion.div>
-						)}
-						{toShow === "login" && (
-							<LoginForm changeShow={(str) => setToShow(str)} />
-						)}
-						{toShow === "register" && (
-							<RegistrationForm
-								changeShow={(str) => setToShow(str)}
-							/>
-						)}
-					</AnimatePresence>
+											Login with email
+										</LoginButton>
+									</div>
+									<div className="text-center text-base font-sans pb-2 mt-6">
+										<p>
+											New here?{" "}
+											<span
+												onClick={() =>
+													setToShow("register")
+												}
+												className="text-purple-700 underline cursor-pointer"
+											>
+												Register
+											</span>
+										</p>
+									</div>
+								</motion.div>
+							)}
+							{toShow === "login" && (
+								<LoginForm
+									changeShow={(str) => setToShow(str)}
+								/>
+							)}
+							{toShow === "register" && (
+								<RegistrationForm
+									changeShow={(str) => setToShow(str)}
+								/>
+							)}
+						</AnimatePresence>
+					</Spin>
 				</div>
 			</div>
 		</div>
