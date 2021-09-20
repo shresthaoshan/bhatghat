@@ -148,21 +148,17 @@ export const useAuth = () => {
 				...authState,
 				status: "VALIDATING_TOKEN",
 			});
-			const resp = await onTokenValidation();
+			await onTokenValidation();
 			setAuth({
 				...authState,
 				status: "LOGGED_IN",
 			});
-			console.log({ resp });
-			message.success("Auto login successful");
 		} catch (ex) {
 			setAuth({
 				...authState,
 				status: "FAILED",
 			});
 			logout();
-			console.log({ ex });
-			message.error(ex.message || "Something went wrong.");
 		}
 	};
 
