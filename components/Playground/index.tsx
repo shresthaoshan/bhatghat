@@ -12,17 +12,8 @@ interface QueryProps {
 function Playground() {
 	const { query } = useRouter();
 	const { roomId }: QueryProps = query as any;
-	const {
-		init,
-		joinRoom,
-		initLocalTrack,
-		closeLocalTracks,
-		room,
-		peers,
-		status,
-		localTrack,
-		isSupported,
-	} = useTwillio("");
+	const { init, joinRoom, initLocalTrack, room, peers, status, localTrack } =
+		useTwillio();
 
 	const localStreamPlayer = useRef<HTMLDivElement>();
 
@@ -37,9 +28,9 @@ function Playground() {
 		const audioTrack: LocalAudioTrack = localTrack.find(
 			(track) => track.kind === "audio"
 		) as any;
-		const dataTrack: LocalDataTrack = localTrack.find(
-			(track) => track.kind === "data"
-		) as any;
+		// const dataTrack: LocalDataTrack = localTrack.find(
+		// 	(track) => track.kind === "data"
+		// ) as any;
 
 		// plug tracks in
 		localStreamPlayer.current.appendChild(videoTrack.attach());
@@ -49,17 +40,32 @@ function Playground() {
 	useEffect(() => {
 		const initSequence = async () => {
 			await initLocalTrack();
-			await init();
+			await init("");
 		};
 
 		initSequence();
 
 		return () => {
-			closeLocalTracks();
 			if (status === "joined") room.disconnect();
 		};
 		// eslint-disable-next-line
 	}, []);
+
+	useEffect(() => {
+		if (localTrack) console.log({ localTrack });
+		return () => {
+			if (!localTrack) return;
+
+			let md: HTMLMediaElement[];
+			localTrack.forEach((track) => {
+				if (track.kind === "audio" || track.kind === "video") {
+					md = track.detach();
+					md.forEach((_m) => _m.remove());
+					track.stop();
+				}
+			});
+		};
+	}, [localTrack]);
 
 	return (
 		<>

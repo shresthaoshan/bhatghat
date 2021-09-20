@@ -5,10 +5,9 @@ import {
 	connect,
 	createLocalTracks,
 	Room,
-	LocalTrack,
 	runPreflight,
-	VideoTrack,
-	AudioTrack,
+	LocalAudioTrack,
+	LocalVideoTrack,
 } from "twilio-video";
 import twillio_config from "configs/twillio.config";
 
@@ -27,10 +26,11 @@ export type StreamStatus =
 	| "disconnected"
 	| "failed";
 
-export const useTwillio = (token: string) => {
+export const useTwillio = () => {
 	const [room, setRoom] = useState<Room>();
 	const [peers, setPeers] = useState<Map<string, RemoteParticipant>>();
-	const [localTrack, setLocalTrack] = useState<LocalTrack[]>();
+	const [localTrack, setLocalTrack] =
+		useState<[LocalAudioTrack, LocalVideoTrack]>();
 
 	const [status, setStatus] = useState<StreamStatus>("idle");
 
@@ -38,15 +38,20 @@ export const useTwillio = (token: string) => {
 		setStatus("preparing");
 		const _localTrack = await createLocalTracks({
 			video: {
-				facingMode: "environment",
+				facingMode: "user",
 			},
 			audio: true,
 		});
-		setLocalTrack(_localTrack);
+		let tracks = [];
+		_localTrack.forEach((tr) => {
+			if (tr.kind === "audio") tracks[0] = tr;
+			if (tr.kind === "video") tracks[1] = tr;
+		});
+		setLocalTrack(tracks as [LocalAudioTrack, LocalVideoTrack]);
 		setStatus("prepared");
 	};
 
-	const init = async () => {
+	const init = async (token: string) => {
 		if (!isSupported) {
 			setStatus("failed");
 			throw new Error("Not supported. Aborted.");
@@ -69,7 +74,7 @@ export const useTwillio = (token: string) => {
 		});
 	};
 
-	const joinRoom = async (roomName: string) => {
+	const joinRoom = async (roomName: string, token: string) => {
 		if (status !== "initiated")
 			throw new Error("Not ready. Initiate the sequence first.");
 
@@ -85,14 +90,6 @@ export const useTwillio = (token: string) => {
 		setPeers(_room.participants);
 	};
 
-	const closeLocalTracks = () => {
-		localTrack?.forEach((track) => {
-			if (track.kind === "audio" || track.kind === "video") {
-				track.stop();
-			}
-		});
-	};
-
 	return {
 		isSupported,
 		room,
@@ -101,7 +98,6 @@ export const useTwillio = (token: string) => {
 		status,
 		init,
 		initLocalTrack,
-		closeLocalTracks,
 		joinRoom,
 	};
 };
