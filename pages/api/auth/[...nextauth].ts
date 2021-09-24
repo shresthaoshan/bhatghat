@@ -34,6 +34,7 @@ export default NextAuth({
 					const resp = await onLoginEmail(email, password);
 					const payload = jwtDecode(resp.token);
 					const name = (payload as any).name as string;
+					const sid = (payload as any).sid as string;
 					return {
 						name,
 						email: resp.token,
