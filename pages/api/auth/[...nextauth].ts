@@ -1,4 +1,6 @@
 import NextAuth from "next-auth";
+import type { User } from "next-auth";
+
 import Providers from "next-auth/providers";
 import google_conf from "configs/google_configs";
 
@@ -31,13 +33,12 @@ export default NextAuth({
 					const { email, password } = creds;
 					const resp = await onLoginEmail(email, password);
 					const payload = jwtDecode(resp.token);
-					const { name, sid } = payload as any;
+					const name = (payload as any).name as string;
 					return {
 						name,
 						email: resp.token,
-						sub: sid,
 						image: `https://avatars.dicebear.com/api/bottts/${sid}.svg`,
-					};
+					} as User;
 				} catch (ex) {
 					return false;
 				}
