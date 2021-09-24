@@ -7,10 +7,11 @@ import GoogleLoginButton from "components/GoogleLoginButton";
 import { Spin } from "antd";
 import { SiMailDotRu } from "react-icons/si";
 import { useAuth } from "data/store/auth.store";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import RegistrationForm from "components/Forms/RegistrationForm";
 import LoginForm from "components/Forms/LoginForm";
 import { WelcomeFormShow } from "./types";
+import { signin, signIn } from "next-auth/client";
 
 function EntryForm() {
 	const [toShow, setToShow] = useState<WelcomeFormShow>("options");
@@ -32,29 +33,27 @@ function EntryForm() {
 						height={80}
 					/>
 					<h3 className="pt-6 pb-0 lg:pb-3 font-sans text-3xl font-semibold">
-						<AnimatePresence initial exitBeforeEnter>
-							{toShow === "options" && (
-								<motion.span
-									initial={{
-										opacity: 0,
-									}}
-									animate={{
-										opacity: 1,
-										transition: {
-											duration: 0.3,
-											type: "spring",
-											damping: 25,
-											stiffness: 500,
-										},
-									}}
-									exit={{
-										opacity: 0,
-									}}
-								>
-									Welcome to
-								</motion.span>
-							)}
-						</AnimatePresence>{" "}
+						{toShow === "options" && (
+							<motion.span
+								initial={{
+									opacity: 0,
+								}}
+								animate={{
+									opacity: 1,
+									transition: {
+										duration: 0.3,
+										type: "spring",
+										damping: 25,
+										stiffness: 500,
+									},
+								}}
+								exit={{
+									opacity: 0,
+								}}
+							>
+								Welcome to
+							</motion.span>
+						)}{" "}
 						<span className="text-purple-700 font-serif font-bold text-4xl">
 							bhetghat
 						</span>
@@ -76,69 +75,68 @@ function EntryForm() {
 							status === "VALIDATING_TOKEN"
 						}
 					>
-						<AnimatePresence initial exitBeforeEnter>
-							{toShow === "options" && (
-								<motion.div
-									initial={{
-										x: "100%",
-										opacity: 0,
-									}}
-									animate={{
-										x: "0%",
-										opacity: 1,
-										transition: {
-											duration: 0.2,
-											type: "spring",
-											damping: 25,
-											stiffness: 500,
-										},
-									}}
-									exit={{
-										x: "0%",
-										opacity: 0,
-									}}
-									key="options"
-									className="p-4 border-2 rounded-md text-center"
-								>
-									<h4 className="text-lg font-sans font-medium">
-										{/* eslint-disable-next-line */}
-										Let's get you started...
-									</h4>
-									<div className="grid grid-rows-2 gap-4 mt-4">
-										<GoogleLoginButton />
-										<LoginButton
-											onClick={() => setToShow("login")}
-											icon={<SiMailDotRu size={20} />}
+						{toShow === "options" && (
+							<motion.div
+								initial={{
+									x: "100%",
+									opacity: 0,
+								}}
+								animate={{
+									x: "0%",
+									opacity: 1,
+									transition: {
+										duration: 0.2,
+										type: "spring",
+										damping: 25,
+										stiffness: 500,
+									},
+								}}
+								exit={{
+									x: "0%",
+									opacity: 0,
+								}}
+								key="options"
+								className="p-4 border-2 rounded-md text-center"
+							>
+								<h4 className="text-lg font-sans font-medium">
+									{/* eslint-disable-next-line */}
+									Let's get you started...
+								</h4>
+								<div className="grid grid-rows-2 gap-4 mt-4">
+									<GoogleLoginButton />
+									<LoginButton
+										// onClick={() => setToShow("login")}
+										onClick={() => {
+											signin();
+										}}
+										icon={<SiMailDotRu size={20} />}
+									>
+										Login with email
+									</LoginButton>
+								</div>
+								<div className="text-center text-base font-sans pb-2 mt-6">
+									<p>
+										New here?{" "}
+										<span
+											onClick={() =>
+												setToShow("register")
+											}
+											className="text-purple-700 underline cursor-pointer"
 										>
-											Login with email
-										</LoginButton>
-									</div>
-									<div className="text-center text-base font-sans pb-2 mt-6">
-										<p>
-											New here?{" "}
-											<span
-												onClick={() =>
-													setToShow("register")
-												}
-												className="text-purple-700 underline cursor-pointer"
-											>
-												Register
-											</span>
-										</p>
-									</div>
-								</motion.div>
-							)}
-							{toShow === "login" && (
-								<LoginForm
-									changeShow={(str) => setToShow(str)}
-								/>
-							)}
-							{toShow === "register" && (
-								<RegistrationForm
-									changeShow={(str) => setToShow(str)}
-								/>
-							)}
-						</AnimatePresence>
+											Register
+										</span>
+									</p>
+								</div>
+							</motion.div>
+						)}
+						{toShow === "login" && (
+							<LoginForm changeShow={(str) => setToShow(str)} />
+						)}
+						{toShow === "register" && (
+							<RegistrationForm
+								changeShow={(str) => setToShow(str)}
+							/>
+						)}
 					</Spin>
 				</div>
 			</div>

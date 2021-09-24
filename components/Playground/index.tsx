@@ -1,9 +1,11 @@
 import React, { useEffect, useRef } from "react";
-import { useRouter } from "next/router";
+import router, { useRouter } from "next/router";
 
 import { useTwillio } from "hooks/useTwillio";
 import PlaygroundItem from "./PlaygroundItem";
 import { LocalAudioTrack, LocalDataTrack, LocalVideoTrack } from "twilio-video";
+import { useWebsocket } from "hooks/useWebsocket";
+import { GetServerSideProps, GetServerSidePropsContext } from "next";
 
 interface QueryProps {
 	roomId: string;
@@ -12,8 +14,17 @@ interface QueryProps {
 function Playground() {
 	const { query } = useRouter();
 	const { roomId }: QueryProps = query as any;
-	const { init, joinRoom, initLocalTrack, room, peers, status, localTrack } =
-		useTwillio();
+	const {
+		init,
+		subcribeSocket,
+		initLocalTrack,
+		room,
+		peers,
+		status,
+		localTrack,
+	} = useTwillio(roomId);
+
+	const {} = useWebsocket();
 
 	const localStreamPlayer = useRef<HTMLDivElement>();
 
@@ -52,7 +63,6 @@ function Playground() {
 	}, []);
 
 	useEffect(() => {
-		if (localTrack) console.log({ localTrack });
 		return () => {
 			if (!localTrack) return;
 

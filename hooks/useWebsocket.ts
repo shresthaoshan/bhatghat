@@ -7,7 +7,7 @@ import {
 	unsubscribeSocket,
 } from "subscribers/socket.subscriber";
 
-export const useWebsocket = (authToken: string) => {
+export const useWebsocket = () => {
 	const manager = new Manager(api_configs.BASE_URL + "/socket.io", {
 		reconnectionAttempts: 3,
 	});
@@ -15,9 +15,10 @@ export const useWebsocket = (authToken: string) => {
 
 	const [socket, setSocket] = useState<Socket | null>(null);
 	useEffect(() => {
-		if (manager && authToken) {
+		if (manager) {
 			if (socket) subscribeSocket(socket);
-			else
+			else {
+				const authToken = localStorage.getItem("token");
 				setSocket(
 					manager.socket("/", {
 						auth: {
@@ -25,15 +26,15 @@ export const useWebsocket = (authToken: string) => {
 						},
 					})
 				);
+			}
 		}
 		return () => {
 			if (socket) unsubscribeSocket(socket);
 		};
 		// eslint-disable-next-line
-	}, [socket, authToken]);
+	}, [socket]);
 
 	const join = () => {
-		if (!authToken.length) return;
 		if (!socket) return;
 		console.log("JOINING");
 

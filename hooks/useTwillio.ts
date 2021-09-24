@@ -10,6 +10,7 @@ import {
 	LocalVideoTrack,
 } from "twilio-video";
 import twillio_config from "configs/twillio.config";
+import { Socket } from "socket.io-client";
 
 const { connection_opts } = twillio_config;
 
@@ -26,7 +27,7 @@ export type StreamStatus =
 	| "disconnected"
 	| "failed";
 
-export const useTwillio = () => {
+export const useTwillio = (roomID: string) => {
 	const [room, setRoom] = useState<Room>();
 	const [peers, setPeers] = useState<Map<string, RemoteParticipant>>();
 	const [localTrack, setLocalTrack] =
@@ -74,20 +75,29 @@ export const useTwillio = () => {
 		});
 	};
 
-	const joinRoom = async (roomName: string, token: string) => {
+	const joinRoom = async (token: string) => {
 		if (status !== "initiated")
 			throw new Error("Not ready. Initiate the sequence first.");
 
 		setStatus("joining");
 		const _room = await connect(token, {
 			...connection_opts,
-			name: roomName,
+			name: roomID,
 			tracks: localTrack,
 		});
 
 		setStatus("joined");
 		setRoom(_room);
 		setPeers(_room.participants);
+	};
+
+	const subcribeSocket = (socket: Socket) => {
+		socket.on("connect", () => {
+			socket.emit("room:enter", roomID);
+		});
+		socket.on("room:token", (token: string) => {
+			joinRoom(token);
+		});
 	};
 
 	return {
@@ -99,5 +109,6 @@ export const useTwillio = () => {
 		init,
 		initLocalTrack,
 		joinRoom,
+		subcribeSocket,
 	};
 };

@@ -1,12 +1,28 @@
+import { GetServerSideProps, GetServerSidePropsContext } from "next";
+import { FC } from "react";
+
 import RoomList from "components/RoomList";
 import Welcome from "components/Welcome";
-import { useAuth } from "data/store/auth.store";
+
 import Image from "next/image";
 import bg from "public/vectors/friends-elem.png";
+import { getSession } from "next-auth/client";
+import { Session } from "next-auth";
 
-export default function Home() {
-	const { status } = useAuth();
+interface HomeProps {
+	session: Session;
+}
 
+export const getServerSideProps: GetServerSideProps<HomeProps> = async (
+	context: GetServerSidePropsContext
+) => {
+	const session = await getSession(context);
+	return {
+		props: { session },
+	};
+};
+
+const Home: FC<HomeProps> = ({ session }) => {
 	return (
 		<>
 			<div className="flex flex-col lg:flex-row gap-4 lg:gap-0 min-h-full lg:h-full justify-between">
@@ -28,8 +44,10 @@ export default function Home() {
 						</div>
 					</div>
 				</div>
-				{status === "LOGGED_IN" ? <RoomList /> : <Welcome />}
+				{!session ? <Welcome /> : <RoomList />}
 			</div>
 		</>
 	);
-}
+};
+
+export default Home;
