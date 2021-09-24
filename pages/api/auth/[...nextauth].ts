@@ -26,7 +26,7 @@ export default NextAuth({
 					placeholder: "***************",
 				},
 			},
-			authorize: async (creds) => {
+			authorize: async (creds, _) => {
 				try {
 					const { email, password } = creds;
 					const resp = await onLoginEmail(email, password);
