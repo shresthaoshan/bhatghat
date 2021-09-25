@@ -28,7 +28,7 @@ export default NextAuth({
 					placeholder: "***************",
 				},
 			},
-			authorize: async (creds, _) => {
+			authorize: async (creds, _): Promise<any> => {
 				try {
 					const { email, password } = creds;
 					const resp = await onLoginEmail(email, password);
@@ -41,7 +41,7 @@ export default NextAuth({
 						image: `https://avatars.dicebear.com/api/bottts/${sid}.svg`,
 					} as User;
 				} catch (ex) {
-					return false;
+					return null;
 				}
 			},
 		}),

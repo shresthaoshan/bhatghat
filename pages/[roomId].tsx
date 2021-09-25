@@ -4,28 +4,29 @@ import { getSession } from "next-auth/client";
 import Playground from "../components/Playground";
 import Sidebar from "../components/Sidebar";
 
-export const getServerSideProps: GetServerSideProps<{ session: Session }> =
-	async (context: GetServerSidePropsContext) => {
-		const session = await getSession(context);
+export const getServerSideProps: GetServerSideProps<{ sess: Session }> = async (
+	context: GetServerSidePropsContext
+) => {
+	const session = await getSession(context);
 
-		const {
-			url,
-			headers: { host },
-		} = context.req;
+	const {
+		url,
+		headers: { host },
+	} = context.req;
 
-		if (session)
-			return {
-				props: { session },
-			};
+	if (session)
 		return {
-			redirect: {
-				destination:
-					"/api/auth/signin?callbackUrl=" +
-					encodeURI("http://" + host + url),
-				permanent: false,
-			},
+			props: { sess: session },
 		};
+	return {
+		redirect: {
+			destination:
+				"/api/auth/signin?callbackUrl=" +
+				encodeURI("http://" + host + url),
+			permanent: false,
+		},
 	};
+};
 
 function Room() {
 	return (
