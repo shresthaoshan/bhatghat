@@ -1,10 +1,35 @@
-import { Spin } from "antd";
+import { Dropdown, Spin, Menu } from "antd";
 import { useJoinedRooms } from "data/entities/room/queries/joined";
 import Link from "next/link";
 import Image from "next/image";
 import React from "react";
+import CMenuItem from "components/Menu/Item";
 
 import { RiRefreshLine } from "react-icons/ri";
+import { useSys } from "hooks/useSys";
+import { signOut } from "next-auth/client";
+import { FiLogOut, FiSettings, FiShield, FiUser } from "react-icons/fi";
+
+const ProfileMenu = () => (
+	<Menu>
+		<CMenuItem link="/profile" icon={<FiUser />}>
+			Profile
+		</CMenuItem>
+		<Menu.Divider />
+
+		<CMenuItem icon={<FiShield />}>Security</CMenuItem>
+		<CMenuItem icon={<FiSettings />}>Settings</CMenuItem>
+		<Menu.Divider />
+		<CMenuItem
+			icon={<FiLogOut />}
+			onClick={() => {
+				signOut();
+			}}
+		>
+			Log Out
+		</CMenuItem>
+	</Menu>
+);
 
 function RoomList() {
 	const {
@@ -15,14 +40,32 @@ function RoomList() {
 		isLoading,
 	} = useJoinedRooms();
 
+	const { session } = useSys();
+
 	return (
 		<div
 			style={{ flex: "0 1 400px" }}
 			className="shadow-lg h-full min-h-full lg:rounded-lg bg-white py-3 flex flex-col gap-2 transition-all"
 		>
-			<div className="w-full h-6 flex justify-between items-center px-3">
+			<div className="w-full h-6 flex justify-between items-center px-3 pb-1">
 				<h3 className="text-lg font-sans font-medium">
-					<span>Your Circles</span>
+					<div className="flex gap-3 flex-row items-center">
+						<div className="rounded-md overflow-hidden cursor-pointer flex justify-center">
+							<Dropdown
+								overlay={ProfileMenu}
+								trigger={["click"]}
+								placement="bottomLeft"
+							>
+								<Image
+									width={30}
+									height={30}
+									src={session.user.image}
+									alt="user avatar"
+								/>
+							</Dropdown>
+						</div>
+						<span>Your Circles</span>
+					</div>
 				</h3>
 				<button
 					className="rounded-full transition-colors hover:text-purple-400"

@@ -34,11 +34,10 @@ export default NextAuth({
 					const resp = await onLoginEmail(email, password);
 					const payload = jwtDecode(resp.token);
 					const name = (payload as any).name as string;
-					const sid = (payload as any).sid as string;
 					return {
 						name,
 						email: resp.token,
-						image: `https://avatars.dicebear.com/api/bottts/${sid}.svg`,
+						image: `https://avatars.dicebear.com/api/initials/${name}.svg`,
 					} as User;
 				} catch (ex) {
 					return null;
