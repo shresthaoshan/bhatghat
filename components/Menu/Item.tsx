@@ -19,6 +19,9 @@ const CMenuItem: FC<MenuItemProps> = ({
 			<Link href={link}>
 				<a>
 					<div
+						onClick={() => {
+							onClick && onClick();
+						}}
 						{...otherProps}
 						className="cursor-pointer py-2 pl-3 pr-24 flex flex-row items-center gap-5 bg-white hover:bg-purple-600 hover:text-white transition-colors"
 					>
@@ -30,6 +33,9 @@ const CMenuItem: FC<MenuItemProps> = ({
 		);
 	return (
 		<div
+			onClick={() => {
+				onClick && onClick();
+			}}
 			{...otherProps}
 			className="cursor-pointer py-2 pl-3 pr-24 flex flex-row items-center gap-5 bg-white hover:bg-purple-600 hover:text-white transition-colors"
 		>

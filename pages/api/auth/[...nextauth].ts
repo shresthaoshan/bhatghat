@@ -1,12 +1,11 @@
 import NextAuth from "next-auth";
-import type { User } from "next-auth";
-
 import Providers from "next-auth/providers";
+
+import tokenUtils from "utils/token.utils";
+import authUtils from "utils/auth.utils";
+
+import authConfigs from "configs/auth_configs";
 import google_conf from "configs/google_configs";
-
-import { onLoginEmail } from "data/entities/login/login.services";
-
-import jwtDecode from "jwt-decode";
 
 export default NextAuth({
 	providers: [
@@ -20,7 +19,7 @@ export default NextAuth({
 				email: {
 					label: "Email",
 					type: "email",
-					placeholder: "oshan.shrestha@gmail.com",
+					placeholder: "john@doe.com",
 				},
 				password: {
 					label: "Password",
@@ -28,26 +27,16 @@ export default NextAuth({
 					placeholder: "***************",
 				},
 			},
-			authorize: async (creds, _): Promise<any> => {
-				try {
-					const { email, password } = creds;
-					const resp = await onLoginEmail(email, password);
-					const payload = jwtDecode(resp.token);
-					const name = (payload as any).name as string;
-					return {
-						name,
-						email: resp.token,
-						image: `https://avatars.dicebear.com/api/initials/${name}.svg`,
-					} as User;
-				} catch (ex) {
-					return null;
-				}
-			},
+			authorize: authUtils.authorize,
 		}),
 	],
 	debug: process.env.NODE_ENV !== "production",
 	session: {
 		jwt: true,
 	},
-	jwt: {},
+	jwt: {
+		secret: authConfigs.TOKEN_SECRET,
+		encode: tokenUtils.encode,
+		decode: tokenUtils.decode,
+	},
 });

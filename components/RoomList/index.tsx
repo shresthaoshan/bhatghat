@@ -16,13 +16,13 @@ const ProfileMenu = () => (
 			Profile
 		</CMenuItem>
 		<Menu.Divider />
-
 		<CMenuItem icon={<FiShield />}>Security</CMenuItem>
 		<CMenuItem icon={<FiSettings />}>Settings</CMenuItem>
 		<Menu.Divider />
 		<CMenuItem
 			icon={<FiLogOut />}
 			onClick={() => {
+				console.log("logging out");
 				signOut();
 			}}
 		>
@@ -59,7 +59,7 @@ function RoomList() {
 								<Image
 									width={30}
 									height={30}
-									src={session.user.image}
+									src={session?.user?.image || "/logo.png"}
 									alt="user avatar"
 								/>
 							</Dropdown>

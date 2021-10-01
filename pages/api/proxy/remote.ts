@@ -1,7 +1,6 @@
 import { AxiosRequestConfig, Method } from "axios";
 import type { NextApiHandler } from "next";
 
-import jwtDecode from "jwt-decode";
 import proxyClient from "utils/proxyAxios";
 
 const remote: NextApiHandler = async (req, res) => {
@@ -16,9 +15,8 @@ const remote: NextApiHandler = async (req, res) => {
 		// who
 		const token = req.cookies["next-auth.session-token"];
 		if (token && token.length) {
-			const payload = jwtDecode(token);
 			config.headers = {
-				Authorization: `Bearer ${(payload as any).email}`,
+				Authorization: `Bearer ${token}`,
 			};
 		}
 

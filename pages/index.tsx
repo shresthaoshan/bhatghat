@@ -10,19 +10,29 @@ import { getSession } from "next-auth/client";
 import { Session } from "next-auth";
 
 interface HomeProps {
-	session: Session;
+	sess: Session;
 }
 
-export const getServerSideProps: GetServerSideProps<HomeProps> = async (
+export const getServerSideProps: GetServerSideProps<{ sess: Session }> = async (
 	context: GetServerSidePropsContext
 ) => {
 	const session = await getSession(context);
+
+	console.log({ session });
+
+	if (session)
+		return {
+			props: { sess: session },
+		};
 	return {
-		props: { session },
+		redirect: {
+			destination: "/api/auth/signin",
+			permanent: false,
+		},
 	};
 };
 
-const Home: FC<HomeProps> = ({ session }) => {
+const Home: FC<HomeProps> = ({ sess }) => {
 	return (
 		<>
 			<div className="flex flex-col lg:flex-row gap-4 lg:gap-0 min-h-full lg:h-full justify-between">
@@ -44,7 +54,7 @@ const Home: FC<HomeProps> = ({ session }) => {
 						</div>
 					</div>
 				</div>
-				{!session ? <Welcome /> : <RoomList />}
+				{!sess ? <Welcome /> : <RoomList />}
 			</div>
 		</>
 	);

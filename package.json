@@ -9,10 +9,12 @@
 		"lint": "next lint"
 	},
 	"dependencies": {
+		"@types/jsonwebtoken": "^8.5.5",
 		"@types/react-custom-scrollbars": "^4.0.8",
 		"antd": "^4.16.13",
 		"axios": "^0.21.4",
 		"framer-motion": "^4.1.17",
+		"jsonwebtoken": "^8.5.1",
 		"jwt-decode": "^3.1.2",
 		"next": "11.1.0",
 		"next-auth": "^3.29.0",
